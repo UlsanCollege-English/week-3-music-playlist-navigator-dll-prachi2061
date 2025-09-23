@@ -12,33 +12,31 @@ class Playlist:
         self.current = None
 
     def add_song(self, title):
-        """Append song to the end of the playlist."""
         new_node = _DNode(title)
-        if not self.head:  # empty playlist
+        if not self.head:
             self.head = self.tail = new_node
         else:
             self.tail.next = new_node
             new_node.prev = self.tail
             self.tail = new_node
-        if not self.current:  # first song added
+        if not self.current:
             self.current = self.head
 
     def play_first(self):
-        """Set current to the first song."""
         self.current = self.head
+        return self.current.title if self.current else None
 
     def next(self):
-        """Move to next song if possible."""
         if self.current and self.current.next:
             self.current = self.current.next
+        return self.current.title if self.current else None
 
     def prev(self):
-        """Move to previous song if possible."""
         if self.current and self.current.prev:
             self.current = self.current.prev
+        return self.current.title if self.current else None
 
     def insert_after_current(self, title):
-        """Insert a new song after the current song."""
         if not self.current:
             self.add_song(title)
             return
@@ -52,9 +50,29 @@ class Playlist:
             self.tail = new_node
 
     def remove_current(self):
-        """Remove current song and update current pointer."""
         if not self.current:
-            return
+            return False
+        prev_node = self.current.prev
+        next_node = self.current.next
+        if prev_node:
+            prev_node.next = next_node
+        else:
+            self.head = next_node
+        if next_node:
+            next_node.prev = prev_node
+        else:
+            self.tail = prev_node
+        self.current = next_node if next_node else prev_node
+        return True
+
+    def to_list(self):
+        result = []
+        node = self.head
+        while node:
+            result.append(node.title)
+            node = node.next
+        return result
+
         prev_node = self.current.prev
         next_node = self.current.next
         if prev_node:
